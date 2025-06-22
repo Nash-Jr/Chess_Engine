@@ -1,6 +1,7 @@
+import os
 import pygame as p
 import ChessEngine
-
+print(os.getcwd())
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8

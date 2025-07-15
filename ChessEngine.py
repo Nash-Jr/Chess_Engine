@@ -3,10 +3,10 @@ class GameState():
         self.board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-            ["--", "wp", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "bp", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
         self.moveFunctions = {'p' : self.getPawnMoves, 'R' : self.getRookMoves, 'N': self.getKnightMoves,
@@ -17,10 +17,14 @@ class GameState():
 
     def makeMove(self, move):
         self.board[move.startRow][move.startCol] = '--'
-        self.board[move.endRow][move.endCol] = move.pieceMoved
-        # log move so we can undo and display history
+        self.board[move.endRow][move.endCol] = move.pieceMoved # log move so we can undo and display history
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove
+        #update Kings location
+        if move.pieceMoved == "wk":
+            self.whiteKingLocation = (move.endRow, move.endCol)
+        if move.pieceMoved == "bk":
+            self.blackKingLocation = (move.endRow, move.endCol)
 
     def undoMove(self):
         if len(self.moveLog) != 0:
@@ -28,13 +32,20 @@ class GameState():
             self.board[move.startRow][move.startCol] = move.pieceMoved
             self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.whiteToMove = not self.whiteToMove
+            if move.pieceMoved == "wk":
+                self.whiteKingLocation = (move.startRow, move.startCol)
+            if move.pieceMoved == "bk":
+                self.blackKingLocation = (move.startRow, move.startCol)
 
     '''
     All moves considering checks
     '''
 
     def getValidMoves(self):
-        return self.getAllPossibleMoves()
+        #Generate all possible moves
+        moves = self.getAllPossibleMoves()
+        #For each move, make the move
+        return moves
 
     '''
     All moves without considering checks 
